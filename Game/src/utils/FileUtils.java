@@ -18,7 +18,7 @@ public class FileUtils {
         
 		char[][] content = new char[80][100];
 
-		FileInputStream fstream = new FileInputStream(cwd+"/src/resources/rooms/okkit" + filename);
+		FileInputStream fstream = new FileInputStream(cwd+"/src/resources/rooms/" + filename);
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(fstream, "UTF8"));

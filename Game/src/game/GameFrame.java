@@ -3,12 +3,9 @@ package game;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFrame;
 
-import game.okkit.OkkitPanel1;
 
 public class GameFrame extends JFrame {
 
@@ -45,7 +42,7 @@ public class GameFrame extends JFrame {
 	public static void main(String[] args) {
 
 		GameFrame m = new GameFrame();
-		m.add(new OkkitPanel1()).requestFocusInWindow();
+		m.add(new GamePanel("Room1")).requestFocusInWindow();
 		
 		m.repaint();
 	}
@@ -54,55 +51,57 @@ public class GameFrame extends JFrame {
 	 * Das alte Panel löschen, ein neues hinzufügen (zu JFrame = Hauptfenster)
 	 */
 
-	public void nextRoom(GamePanel previousRoom, String nextRoomClass) {
+	public void nextRoom(GamePanel previousRoom, GameDoor door) {
 		
-		Class<?> room = null;
-		try {
-			room = Class.forName(nextRoomClass);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
-		
-		 // Get the Constructor object of the public constructor
-        // that matches the specified parameterTypes
-		Constructor<?> constructor = null;
-        try {
-			constructor = room.getConstructor();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        if (constructor == null)
-        	return;
-	
-        GamePanel nextRoomPanel = null;
-        try {
-        	nextRoomPanel = (GamePanel) constructor.newInstance();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        if (nextRoomPanel == null)
-        	return;
-        
+//		String nextRoomClass = door.getRoomClassName();
+//		Class<?> room = null;
+//		try {
+//			room = Class.forName(nextRoomClass);
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return;
+//		}
+//		
+//		 // Get the Constructor object of the public constructor
+//        // that matches the specified parameterTypes
+//		Constructor<?> constructor = null;
+//        try {
+//			constructor = room.getConstructor();
+//		} catch (NoSuchMethodException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SecurityException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//        
+//        if (constructor == null)
+//        	return;
+//	
+//        GamePanel nextRoomPanel = null;
+//        try {
+//        	nextRoomPanel = (GamePanel) constructor.newInstance();
+//		} catch (InstantiationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return;
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalArgumentException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvocationTargetException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//        
+//        if (nextRoomPanel == null)
+//        	return;
+//        
         this.remove(previousRoom);
+        GamePanel nextRoomPanel = new GamePanel(door.getRoomDataFile(), door.getPosition());
         this.add(nextRoomPanel).requestFocusInWindow();
         
 //        this.add(((Component) constructor.newInstance(new Point(100, 500))).requestFocusInWindow();

@@ -19,20 +19,29 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import game.okkit.GameRules_okkit;
 import utils.BoundsUtils;
 import utils.FileUtils;
 
-public abstract class GamePanel extends JPanel implements KeyListener, MouseListener {
+public class GamePanel extends JPanel implements KeyListener, MouseListener {
 
 	private static final long serialVersionUID = 1L;
 
 //	GamePiece player;
 	boolean pause;
-
+	
 	/**
 	 * Konstruktor
 	 */
 	public GamePanel(String dataSource) {
+
+		this(dataSource, -1);
+	}
+
+	/**
+	 * Konstruktor
+	 */
+	public GamePanel(String dataSource, int playerPosition) {
 
 		super();
 
@@ -55,15 +64,60 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 		}
 
 		initDoors(content);
+		initPlayer(content, playerPosition);
 		initPieces(content);
 		startRobots();
+	}
+
+	private void initPlayer(char[][] content, int playerPosition) {
+		
+		char ch;
+		
+		if (playerPosition < 0) {
+			for (int i = 1; i < content.length - 3; i++) {
+				for (int j = 1; j < content[i].length - 3; j++) {
+					ch = content[i][j];
+					if (ch == Constants.CH_PLAYER) {
+						this.add(GamePlayer.playerAtPosition(new Point(j * Constants.FILE_STEP_X, i * Constants.FILE_STEP_Y))).repaint();
+						return;
+					} 
+					
+				}
+			}
+		}
+		
+		int x = 0;
+		int y = 0;
+		
+		GameDoor door = this.getDoor(playerPosition);
+		Rectangle rect = door.getBounds();
+		switch (door.getPosition()) {
+		case Constants.OBEN:
+			y = 20;
+			x = rect.x + rect.width/2;
+			break;
+		case Constants.UNTEN:
+			y = this.getBounds().height - 100;
+			x = rect.x + rect.width/2;
+			break;
+		case Constants.LINKS:
+			x = 20;
+			y = rect.y + rect.height/2;
+			break;
+		case Constants.RECHTS:
+			x = this.getBounds().width - 100;
+			y = rect.y + rect.height/2;
+			break;
+		}
+
+		this.add(GamePlayer.playerAtPosition(new Point(x, y))).repaint();
 	}
 
 	protected char[][] readContent(String source) {
 
 		char[][] content = null;
 		try {
-			content = FileUtils.readText(source);
+			content = FileUtils.readText(source+".txt");
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -85,10 +139,6 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 				else if (ch == Constants.CH_BLOCK) {
 					this.add(new Block(j * Constants.FILE_STEP_X, i * Constants.FILE_STEP_Y));
 				} 
-				else if (ch == Constants.CH_PLAYER) {
-					this.add(GamePlayer
-							.playerAtPosition(new Point(j * Constants.FILE_STEP_X, i * Constants.FILE_STEP_Y))).repaint();
-				}
 			}
 		}
 	}
@@ -117,7 +167,7 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 				doorClassName += ch;
 			} else if (door) {
 				end = i - 1;
-				this.add(new GameDoor(begin * Constants.FILE_STEP_X, 0, (end - begin) * Constants.FILE_STEP_X,
+				this.add(new GameDoor(Constants.OBEN, begin * Constants.FILE_STEP_X, 0, (end - begin) * Constants.FILE_STEP_X,
 						Constants.DOOR_THICKNESS, doorClassName));
 				door = false;
 
@@ -139,7 +189,7 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 				doorClassName += ch;
 			} else if (door) {
 				end = i - 1;
-				this.add(new GameDoor(begin * Constants.FILE_STEP_X, this.getBounds().height - Constants.DOOR_THICKNESS,
+				this.add(new GameDoor(Constants.UNTEN, begin * Constants.FILE_STEP_X, this.getBounds().height - Constants.DOOR_THICKNESS,
 						(end - begin) * Constants.FILE_STEP_X, Constants.DOOR_THICKNESS, doorClassName));
 				door = false;
 //				System.out.println(door + "---------------------- unten endet " + doorClassName);
@@ -159,7 +209,7 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 				doorClassName += ch;
 			} else if (door) {
 				end = i - 1;
-				this.add(new GameDoor(0, begin * Constants.FILE_STEP_Y, Constants.DOOR_THICKNESS,
+				this.add(new GameDoor(Constants.LINKS, 0, begin * Constants.FILE_STEP_Y, Constants.DOOR_THICKNESS,
 						(end - begin) * Constants.FILE_STEP_Y, doorClassName));
 //				System.out.println(door + "---------------------- links endet " + doorClassName);
 				door = false;
@@ -179,7 +229,7 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 				doorClassName += ch;
 			} else if (door) {
 				end = i - 1;
-				this.add(new GameDoor(this.getBounds().width - Constants.DOOR_THICKNESS, begin * Constants.FILE_STEP_Y,
+				this.add(new GameDoor(Constants.RECHTS, this.getBounds().width - Constants.DOOR_THICKNESS, begin * Constants.FILE_STEP_Y,
 						Constants.DOOR_THICKNESS, (end - begin) * Constants.FILE_STEP_Y, doorClassName));
 				door = false;
 //				System.out.println(door + "---------------------- rechts endet " + doorClassName);
@@ -238,11 +288,11 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 	private int willDoStep(GamePiece moving, int richtung, int step) {
 
 		if (moving instanceof GamePlayer) {
-			String room = this.checkPlayerAtDoor(moving);
-			if (room != null) {
+			GameDoor door = this.checkPlayerAtDoor(moving);
+			if (door != null) {
 
-				System.out.println("Player at the Door " + room);
-				this.stop(room);
+				System.out.println("Player at the Door " + door.getRoomDataFile());
+				this.stop(door);
 				return -1;
 			}
 		}
@@ -285,27 +335,31 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 		return moveStep;
 	}
 
-	protected String checkPlayerAtDoor(GamePiece moving) {
+	protected GameDoor checkPlayerAtDoor(GamePiece moving) {
 
 		ArrayList<GameDoor> doors = this.getAllDoors();
 		for (GameDoor door : doors) {
-			String room = door.pieceAtMe(moving.getBounds());
-			if (room != null) {
-				return room;
+			if (door.pieceAtMe(moving.getBounds())) {
+				return door;
 			}
 		}
 		return null;
 	}
 
-	protected abstract boolean interaction(Object attacker, Object attacked);
+	protected boolean interaction(Object attacker, Object attacked) {
+		return GameRules_okkit.interaction(attacker, attacked);
+	}
+	
+	protected boolean movable(Object moving, Object standing) {
+		return GameRules_okkit.movable(moving, standing);
+	}
 
-	protected abstract boolean movable(Object moving, Object standing);
 
 	/**
 	 * Aufgabe: Kommentieren Sie JEDE Zeile. D. h. erklären Sie, was in dieser jeder
 	 * Zeile passiert!
 	 */
-	private void stop(String room) {
+	private void stop(GameDoor door) {
 		System.out.println("STOOOOOOOOOOOOOOOOOPPPPPPPPPPP in " + this.getMyFrame().getClass());
 
 		this.pause = true;
@@ -337,7 +391,7 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 				if (alpha + counter * alphastep > 255) {
 					me.getParent().remove(fog);
 					((Timer) evt.getSource()).stop();
-					me.getMyFrame().nextRoom(me, room);
+					me.getMyFrame().nextRoom(me, door);
 
 //					System.out.println("############################ " + me.getParent().getClass());
 				}
@@ -379,6 +433,17 @@ public abstract class GamePanel extends JPanel implements KeyListener, MouseList
 			}
 		}
 		return list;
+	}
+	
+	GameDoor getDoor(int position) {
+		
+		ArrayList<GameDoor> list = getAllDoors();
+		
+		for (GameDoor gameDoor : list) {
+			if (gameDoor.getPositionInTheNextRoom() == position)
+				return gameDoor;
+		}
+		return null;
 	}
 
 	GameFrame getMyFrame() {

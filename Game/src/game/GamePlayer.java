@@ -30,6 +30,7 @@ public class GamePlayer extends GamePiece implements Mortable {
 		}
 		return GamePlayer.instance;
 	}
+	
 
 	public static GamePlayer getPlayer() {
 		if (GamePlayer.instance == null) {
