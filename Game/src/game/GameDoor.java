@@ -4,6 +4,8 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Rectangle;
 
+import utils.BoundsUtils;
+
 public class GameDoor extends Canvas {
 
 	private static final long serialVersionUID = 1L;
@@ -57,9 +59,11 @@ public class GameDoor extends Canvas {
 																					// this.getBounds().getHeight()) {
 
 			if (this.position == Constants.OBEN) // (this.getBounds().y < 4) {
-				yes = piece.getBounds().y <= this.getBounds().height; // die Tür ist oben
+//				yes = piece.getBounds().y <= this.getBounds().height; // die Tür ist oben
+				return BoundsUtils.overlapByMoving(piece, this.getBounds(), Constants.OBEN, 5);//(piece, this.getBounds(), Constants.OBEN);
 			else
-				yes = piece.getBounds().y + piece.getBounds().height + 10 > this.getBounds().y; // die Tür ist unten
+				return BoundsUtils.overlapByMoving(piece, this.getBounds(), Constants.UNTEN, 5);
+//				yes = piece.getBounds().y + piece.getBounds().height + 10 > this.getBounds().y; // die Tür ist unten
 		}
 
 		// Bin eine Senkrechte Tür am linken oder am rechten Rand des Raums
