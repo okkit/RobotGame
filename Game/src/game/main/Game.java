@@ -12,5 +12,4 @@ public class Game {
 		
 		m.repaint();
 	}
-
 }
