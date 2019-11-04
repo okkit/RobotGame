@@ -31,7 +31,8 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	boolean pause;
 	
 	/**
-	 * Konstruktor
+	 * 
+	 * @param dataSource Name der Mappingdatei
 	 */
 	public GamePanel(String dataSource) {
 
@@ -39,7 +40,9 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 	}
 
 	/**
-	 * Konstruktor
+	 * 
+	 * @param dataSource
+	 * @param playerPosition bezieht sich auf UNTEN, OBEN, LINKS oder RECHTS
 	 */
 	public GamePanel(String dataSource, int playerPosition) {
 
