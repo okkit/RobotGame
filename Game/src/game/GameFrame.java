@@ -37,6 +37,8 @@ public class GameFrame extends JFrame {
 				System.exit(0);
 			}
 		});
+		
+		add(new GamePanel("Room1")).requestFocusInWindow();
 	}
 
 	/**
