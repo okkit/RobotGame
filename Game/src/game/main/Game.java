@@ -1,7 +1,6 @@
 package game.main;
 
 import game.GameFrame;
-import game.GamePanel;
 
 public class Game {
 
