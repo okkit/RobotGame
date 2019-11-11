@@ -18,7 +18,7 @@ public class GameFrame extends JFrame {
 	/**
 	 * Konstruktor
 	 */
-	public GameFrame() {
+	public GameFrame(String map) {
 
 		setLayout(null);
 		setTitle(Constants.GAME_NAME);
@@ -38,7 +38,7 @@ public class GameFrame extends JFrame {
 			}
 		});
 		
-		add(new GamePanel("Room1")).requestFocusInWindow();
+		add(new GamePanel(map)).requestFocusInWindow();
 	}
 
 	/**
