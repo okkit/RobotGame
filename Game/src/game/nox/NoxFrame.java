@@ -4,6 +4,11 @@ import game.GameFrame;
 
 public class NoxFrame extends GameFrame {
 
+	public NoxFrame(String map) {
+		super(map);
+	}
+
+
 	/**
 	 * 
 	 */
