@@ -288,7 +288,7 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 		}
 	}
 
-	private int willDoStep(GamePiece moving, int richtung, int step) {
+	public int willDoStep(GamePiece moving, int richtung, int step) {
 
 		if (moving instanceof GamePlayer) {
 			GameDoor door = this.checkPlayerAtDoor(moving);
