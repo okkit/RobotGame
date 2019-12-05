@@ -1,4 +1,4 @@
-package game;
+package game.master;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -141,6 +141,9 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 				} 
 				else if (ch == Constants.CH_BLOCK) {
 					this.add(new Block(j * Constants.FILE_STEP_X, i * Constants.FILE_STEP_Y));
+				} 
+				else if (ch == Constants.CH_KEY) {
+					this.add(new Key(j * Constants.FILE_STEP_X, i * Constants.FILE_STEP_Y));
 				} 
 			}
 		}
@@ -321,6 +324,12 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 							moveStep = step;
 							moveStep = this.willDoStep(next, richtung, moveStep);
 						}
+						else if (moving instanceof GamePlayer && next instanceof Key) {
+							
+							// Key verschwindet
+							this.remove(next);
+							this.jubel();
+						}
 					}
 				}
 			}
@@ -333,9 +342,13 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 
 		if (moveStep > 0) {
 			moving.move(moveStep, richtung);
-//			this.bewege(moving, richtung, moveStep);
 		}
 		return moveStep;
+	}
+
+	private void jubel() {
+		
+		
 	}
 
 	protected GameDoor checkPlayerAtDoor(GamePiece moving) {
@@ -433,6 +446,20 @@ public class GamePanel extends JPanel implements KeyListener, MouseListener {
 
 			if (piece instanceof GameDoor) {
 				list.add((GameDoor) piece);
+			}
+		}
+		return list;
+	}
+	
+	ArrayList<Key> getAllKey() {
+
+		Component[] piecies = this.getComponents();
+		ArrayList<Key> list = new ArrayList<Key>();
+
+		for (Component piece : piecies) {
+
+			if (piece instanceof Key) {
+				list.add((Key) piece);
 			}
 		}
 		return list;

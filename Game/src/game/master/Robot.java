@@ -1,4 +1,4 @@
-package game;
+package game.master;
 
 import java.awt.Container;
 import java.awt.Point;
@@ -40,16 +40,6 @@ public class Robot extends GamePiece implements Mortable {
 	public Timer getTimer() {
 		return this.timer;
 	}
-
-//	public boolean isDeadly() {
-//
-//		return true;
-//	}
-//
-//	public boolean isMovable() {
-//
-//		return false;
-//	}
 
 	public void die() {
 
@@ -99,57 +89,12 @@ public class Robot extends GamePiece implements Mortable {
 				
 				GamePanel parent = (GamePanel) me.getParent();
 				parent.willDoStep(me, richtung_UO, 30);
-//
-//				GamePanel parent = (GamePanel) me.getParent();
-//
-//				boolean stop = false;
-//				for (GamePiece comp : parent.getAllGamePiece()) {
-//
-//					if (me.equals(comp))
-//						continue;
-//
-//					stop = BoundsUtils.overlapByMoving(my, comp.getBounds(), richtung_LR, step)
-//							|| BoundsUtils.overlapByMoving(my, comp.getBounds(), richtung_UO, step)
-//							|| BoundsUtils.smallOutsideOfGreat(my, me.getParent().getBounds(), richtung_LR, step)
-//							|| BoundsUtils.smallOutsideOfGreat(my, me.getParent().getBounds(), richtung_UO, step);
-//
-//					if (stop) {
-//						if (!GameRules_okkit.interaction(me, comp))
-//							counter++;
-//						break;
-//					}
-//				}
-//
-//				if (richtung_UO == Constants.UNTEN) {
-//					if (stop)
-//						new_y = my.y - step;
-//					else
-//						new_y = my.y + step;
-//				} else {
-//					if (stop)
-//						new_y = my.y + step;
-//					else
-//						new_y = my.y - step;
-//				}
-//
-//				if (richtung_LR == Constants.LINKS) {
-//					if (stop)
-//						new_x = my.x + step;
-//					else
-//						new_x = my.x - step;
-//				} else {
-//					if (stop)
-//						new_x = my.x - step;
-//					else
-//						new_x = my.x + step;
-//				}
+
 
 				if (counter == me.dieAfter) {
 					((Timer) evt.getSource()).stop();
 					me.die();
 				} 
-//				else
-//					me.setBounds(new_x, new_y, my.width, my.height);
 			}
 		});
 		timer.start();
